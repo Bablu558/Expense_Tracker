@@ -171,7 +171,7 @@
                 <a class="profile-icon" href="{% url 'profile' %}">
                     <i class="fas fa-user"></i> <!-- FontAwesome profile icon -->
                 </a>
-                <a href="{% url 'logout' %}">Logout</a>
+                {% comment %} <a href="{% url 'logout' %}">Logout</a> {% endcomment %}
                 {% else %}
                 <a href="{% url 'login' %}">Sign In</a>
                 <a href="{% url 'register' %}">Sign Up</a>

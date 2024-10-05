@@ -98,9 +98,15 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
-
-# View for adding borrow
 @login_required
+def profile(request):
+    user = request.user  # Get the logged-in user
+    context = {
+        'user': user  # Pass user info to the template
+    }
+    return render(request, 'profile.html', context)
+# View for adding borrow
+# @login_required
 def add_borrow(request):
     if request.method == 'POST':
         form = BorrowForm(request.POST)

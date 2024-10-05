@@ -84,3 +84,17 @@ body {
     padding: 10px 0;
     margin-top: 50px;
 }
+.profile-logout {
+    display: block;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f44336; /* Red background */
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.profile-logout:hover {
+    background-color: #c62828; /* Darker red on hover */
+}
