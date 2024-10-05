@@ -1,0 +1,414 @@
+{% extends 'base.html' %}
+{% block navigation_links %}
+    <a href="{% url 'home' %}">Home</a>
+{% endblock %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            /*background-color: #f4f4f4;*/
+            color: #333;
+            margin: 0;
+            padding: 0;
+            {% comment %} display: flex;
+            justify-content: center;
+            align-items: center; {% endcomment %}
+            height: 100vh;
+            display: grid;
+           grid-template-rows: auto 1fr auto;
+        }
+
+        /* Main container styles */
+
+       .container {
+             
+            width: 90%;
+            max-width: 1000px;
+        
+            padding: 20px;
+            border-radius: 8px;
+          /*  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);*/
+            margin-top:20px;
+            margin: auto;/* Centers the container vertically and horizontally */
+            
+        } 
+        
+        /* Headings */
+
+        h1 {
+            text-align: center;
+            color: #444;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #777;
+            margin-bottom: 20px;
+        }
+
+
+        /*Table Style */
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+           /* color: #333;*/
+           color: white;
+
+        }
+        td {
+            background-color: #fafafa;
+           /* transition: background-color 0.3s ease;*/
+           font-size: 1.4rem;
+        }
+        tr:nth-child(odd) td {
+            background-color: #e0f7fa; /* Light cyan for odd rows */
+        }
+        /* Hover effect for all rows */
+        tr:hover td {
+            background-color: #a7ffeb; /* Light green cyan on hover */
+        }
+
+        /* Button styles */
+
+
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            color: #fff;
+            background-color: #007bff;
+            border-radius: 5px;
+            text-decoration: none;
+            text-align: center;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+
+        /* Filter from style */
+         
+
+        .filter-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            column-gap:30px;
+            margin-bottom: 20px;
+        }
+        .filter-form div {
+            flex: 1;
+            min-width: 150px;
+        }
+        .filter-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .filter-form input,
+        .filter-form select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .filter-form button {
+            width: 19%;/*here*/
+            height: fit-content;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border:none;
+            margin-top: 25px;
+            
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .filter-form button:hover {
+            background-color: #0056b3;
+        }
+        .action-icon {
+            cursor: pointer;
+            color: #dc3545;
+            font-size: 1.5rem;
+        }
+        .action-icon:hover {
+            color: #c82333;
+        }
+        
+        /* Styling for the add icon row */
+        .add-icon-row {
+            text-align: center;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+        .add-icon-row:hover {
+            background-color: #0056b3;
+        }
+
+
+        /* Action icon styles */
+
+
+        .action-icon {
+            cursor: pointer;
+            color: #dc3545;
+            font-size: 1.5rem;
+        }
+        .action-icon:hover {
+            color: #c82333;
+        }
+        
+        /* Styling for the add icon row */
+
+        .add-icon-row {
+            text-align: center;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+        .add-icon-row:hover {
+            background-color: #0056b3;
+        }
+        .action-icon {
+            cursor: pointer;
+            color: #dc3545;
+            font-size: 1.5rem;
+        }
+        .action-icon:hover {
+            color: #c82333;
+        }
+        
+        /* Styling for the add icon row */
+        .add-icon-row {
+            {% comment %} text-align: center;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1.5rem; {% endcomment %}
+        }
+        .add-icon-row:hover {
+            background-color: #0056b3;
+        }
+
+
+
+    
+.add-icon-row td i{
+    color:green;
+    text-decoration:underline;
+    display:flex;
+    align-items:center;
+    text-align:center;
+    justify-content:center;
+}
+.action-icon a i{
+    color: #ff0000;
+    display:flex;
+    align-items:center;
+    text-align:center;
+    justify-content:center;
+}
+.action-icon a i:hover{
+    color: #b30000
+}
+
+
+/* Media queries for responsive design */
+
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+
+    h2 {
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+
+    .container {
+        width: 75%;
+        padding: 15px;
+    }
+
+    th, td {
+        padding: 8px;
+        font-size: 1.2rem;
+    }
+
+    .filter-form {
+        gap: 15px;
+        
+    }
+
+    .filter-form div {
+        min-width: 70px;
+    }
+
+    .filter-form button {
+        padding: 8px 15px;
+    }
+
+    .btn {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    h2 {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    .container {
+        width: 100%;
+        padding: 10px;
+    }
+
+    th, td {
+        padding: 6px;
+        font-size: 1rem;
+    }
+
+    .filter-form {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .filter-form div {
+        min-width: 100%;
+    }
+
+    .filter-form button {
+        width: 100%;
+        padding: 8px;
+    }
+
+    .btn {
+        padding: 6px 10px;
+        font-size: 12px;
+        width: 100%;
+    }
+}
+
+
+
+{% comment %} .delete-icon {
+    color: #ff0000; /* Red color for the delete icon */
+    font-size: 1.5rem; /* Adjust the size */
+    cursor: pointer;
+}
+
+.delete-icon:hover {
+    color: #b30000; /* Darker red on hover */
+} {% endcomment %}
+    </style>
+</head>
+<body>
+
+    
+    <div class="container">
+            
+        <h1>Daily Expenses</h1>
+        <h2>Total Expense: ₹{{ total_expense }}</h2>
+        {% comment %} <a href="{% url 'add_expense' %}" class="btn">Add New Expense</a> {% endcomment %}
+
+        <!-- Filter Form -->
+        <form method="get" class="filter-form">
+            <div>
+                <label for="category">Category:</label>
+                <select name="category" id="category">
+                    <option value="">All</option>
+                    <option value="Food" {% if category == 'Food' %}selected{% endif %}>Food</option>
+                    <option value="Travel" {% if category == 'Travel' %}selected{% endif %}>Travel</option>
+                    <option value="Shopping" {% if category == 'Shopping' %}selected{% endif %}>Shopping</option>
+                    <option value="Entertainment" {% if category == 'Entertainment' %}selected{% endif %}>Entertainment</option>
+                    <option value="Grocery" {% if category == 'Grocery' %}selected{% endif %}>Grocery</option>
+                    <option value="College" {% if category == 'College' %}selected{% endif %}>College</option>
+                    <option value="Other" {% if category == 'Other' %}selected{% endif %}>Other</option>
+                </select>
+            </div>
+            <div>
+                <label for="start_date">Start Date:</label>
+                <input type="date" name="start_date" id="start_date" value="{{ start_date }}">
+            </div>
+            <div>
+                <label for="end_date">End Date:</label>
+                <input type="date" name="end_date" id="end_date" value="{{ end_date }}">
+            </div>
+            {% comment %} <div>
+                <label for="search">Search by Title/Description:</label>
+                <input type="text" name="search" id="search" value="{{ search_term }}">
+            </div> {% endcomment %}
+            <button type="submit">Apply Filters</button>
+        </form>
+        <table>
+            <thead>
+                <tr>
+                    <th>Amount</th>
+                    <!-- <th>Title</th> -->
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expense in expenses %}
+                <tr>
+                    <td>₹{{ expense.amount }}</td>
+                    <!-- <td>{{ expense.title }}</td> -->
+                    <td>{{ expense.category }}</td>
+                    <td>{{ expense.date }}</td>
+                    <td>{{ expense.description }}</td>
+                    <td class="action-icon">
+                        <a href="{% url 'delete_expense' expense.id %}">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+                <!-- Add new expense row -->
+                <tr class="add-icon-row">
+                    <td colspan="5">
+                        <a href="{% url 'add_expense' %}">
+                            <i class="fas fa-plus"></i>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+     
+    </div>
+</body>
+</html>
+{% endblock %}

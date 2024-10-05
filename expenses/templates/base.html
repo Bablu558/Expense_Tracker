@@ -1,0 +1,201 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Expense Tracker{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .navbar {
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            padding: 10px 20px;
+            color: #fff;
+            position: relative;
+        }
+        .navbar, .footer {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        @media (max-width: 768px) {
+    .navbar, .footer {
+        width: 100%;
+    }
+}
+        .navbar h1 {
+            color: #fff; /* Or the intended color */
+            opacity: 1; /* Ensure full opacity */
+            z-index: 10; /* Ensure it stays on top if necessary */
+        }
+        .navbar .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .navbar .profile-icon {
+            cursor: pointer;
+        }
+
+        .navbar .profile-icon i {
+            font-size: 24px;
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            font-size: 24px;
+            color: #fff;
+            z-index: 2; /* Ensure the menu toggle stays on top */
+            position: relative; /* Ensure it stays above the nav-links */
+        }
+
+        .menu-toggle div {
+            background-color: #fff;
+            height: 3px;
+            margin: 3px 0;
+            width: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle.open div:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 4px);
+        }
+
+        .menu-toggle.open div:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.open div:nth-child(3) {
+            transform: rotate(-45deg) translate(9px, -5px);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            z-index: 1; /* Below the menu toggle */
+            background-color: #333; /* Add background color */
+        }
+
+        .nav-links a {
+            margin: 0 10px;
+            font-size: 20px;
+            text-decoration:none;
+            color:white;
+        }
+
+        .nav-links.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100px;
+                right: 10px;
+                background-color:grey;
+                width: 200px;
+                padding: 10px;
+            }
+
+            .nav-links a {
+                margin: 10px 0;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+        }
+
+        .container {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .footer {
+            background: grey;
+            padding: 10px;
+            text-align: center;
+            color: #333;
+            border-top: 1px solid #ddd;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            justify-content: center;
+            column-gap: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo"><h1>Expense Tracker</h1></div>
+        <div class="menu-toggle" id="menu-toggle">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="nav-links" id="nav-links">
+            <a href="{% url 'add_expense' %}">Add Expense</a>
+            <a href="{% url 'add_borrow' %}">Add Borrow</a>
+            <a href="{% url 'borrow_list' %}">Borrow List</a> 
+            {% block navigation_links %}
+            <a href="{% url 'expense_list' %}">View Expenses</a>
+        {% endblock %}          
+        
+        <!-- Other links -->
+            {% if user.is_authenticated %}
+                <a class="profile-icon" href="{% url 'profile' %}">
+                    <i class="fas fa-user"></i> <!-- FontAwesome profile icon -->
+                </a>
+                <a href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                <a href="{% url 'login' %}">Sign In</a>
+                <a href="{% url 'register' %}">Sign Up</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="container">
+        {% block content %}
+        <!-- Content from child templates will be injected here -->
+        {% endblock %}
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2024 Expense Tracker. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const navLinks = document.getElementById('nav-links');
+            const menuToggle = document.getElementById('menu-toggle');
+            navLinks.classList.toggle('active');
+            menuToggle.classList.toggle('open');
+        });
+    </script>
+</body>
+</html>
