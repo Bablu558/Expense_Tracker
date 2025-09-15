@@ -3,13 +3,40 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1>Welcome to the Expense Tracker</h1>
-    <p>Track your expenses easily and efficiently.</p>
-    <p>
-        <a href="{% url 'expense_list' %}" class="btn">View Expense List</a>
-        <a href="{% url 'add_expense' %}" class="btn">Add New Expense</a>
-    </p>
+<div class="home-wrapper" style="text-align:center; margin-top:50px; padding:0 15px;">
+    <h1 style="font-size:2rem; margin-bottom:15px; color:#333;">Welcome to Expense Tracker</h1>
+    <p style="font-size:1rem; color:#555;">Track your expenses easily and efficiently.</p>
 
+    <div class="btn-group" style="margin-top:30px; display:flex; flex-direction:column; gap:15px; max-width:300px; margin-left:auto; margin-right:auto;">
+        {% if user.is_authenticated %}
+            <!-- If logged in -->
+            <a href="{% url 'expense_list' %}" 
+               class="btn" 
+               style="background:#007bff; color:#fff; padding:12px; border-radius:5px; text-decoration:none; font-size:1rem;">
+               📊 View Expense List
+            </a>
+            <a href="{% url 'add_expense' %}" 
+               class="btn" 
+               style="background:#28a745; color:#fff; padding:12px; border-radius:5px; text-decoration:none; font-size:1rem;">
+               ➕ Add New Expense
+            </a>
+        {% else %}
+            <!-- If not logged in, redirect to login with ?next -->
+            <a href="{% url 'login' %}?next={% url 'expense_list' %}" 
+               class="btn" 
+               style="background:#007bff; color:#fff; padding:12px; border-radius:5px; text-decoration:none; font-size:1rem;">
+               📊 View Expense List
+            </a>
+            <a href="{% url 'login' %}?next={% url 'add_expense' %}" 
+               class="btn" 
+               style="background:#28a745; color:#fff; padding:12px; border-radius:5px; text-decoration:none; font-size:1rem;">
+               ➕ Add New Expense
+            </a>
+            <p style="margin-top:15px; color:#555; font-size:0.9rem;">
+                You need to <a href="{% url 'login' %}" style="color:#007bff;">Login</a> or 
+                <a href="{% url 'register' %}" style="color:#28a745;">Sign Up</a> to continue.
+            </p>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
