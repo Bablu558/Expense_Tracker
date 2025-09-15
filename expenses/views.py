@@ -3,31 +3,31 @@ from .models import Expense
 from .forms import ExpenseForm
 from .models import Borrow
 from .forms import BorrowForm
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.contrib.auth import authenticate, login, logout
 from .forms import RegisterForm, LoginForm 
 from django.contrib.auth.decorators import login_required
+
 def home(request):
     return render(request, 'home.html')
 
+@login_required
 def profile(request):
-    return render(request, 'profile.html')
+    user = request.user
+    context = {
+        'user': user
+    }
+    return render(request, 'profile.html', context)
 
+@login_required
 def expense_list(request):
-    # Get filter criteria from request
     category = request.GET.get('category')
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
     search_term = request.GET.get('search')
 
-    # Start with all expenses
-    # expenses = Expense.objects.all()
-    
-    # agar hum chahe jo newly data h wo top se add ho
-    expenses = Expense.objects.all().order_by('-date')  # Order by date descending
-    
+    expenses = Expense.objects.filter(user=request.user).order_by('-date')  # ✅ Filter by logged-in user
 
-    # Apply filters if provided
     if category:
         expenses = expenses.filter(category=category)
     if start_date and end_date:
@@ -48,27 +48,25 @@ def expense_list(request):
         'search_term': search_term,
     }
     return render(request, 'expenses/expense_list.html', context)
+
+@login_required
 def add_expense(request):
     if request.method == 'POST':
         form = ExpenseForm(request.POST)
         if form.is_valid():
-            form.save()
+            expense = form.save(commit=False)
+            expense.user = request.user  # ✅ Assign logged-in user
+            expense.save()
             return redirect('expense_list')
     else:
         form = ExpenseForm()
     return render(request, 'expenses/add_expense.html', {'form': form})
 
-
-
-
+@login_required
 def delete_expense(request, id):
-    expense = get_object_or_404(Expense, id=id)
+    expense = get_object_or_404(Expense, id=id, user=request.user)  # ✅ Ensure user owns expense
     expense.delete()
     return redirect('expense_list')
-
-
-
-
 
 def register(request):
     if request.method == 'POST':
@@ -89,7 +87,7 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('home')  # Redirect to the home page or borrowed amounts page
+                return redirect('home')
     else:
         form = LoginForm()
     return render(request, 'login.html', {'form': form})
@@ -99,14 +97,6 @@ def logout_view(request):
     return redirect('login')
 
 @login_required
-def profile(request):
-    user = request.user  # Get the logged-in user
-    context = {
-        'user': user  # Pass user info to the template
-    }
-    return render(request, 'profile.html', context)
-# View for adding borrow
-# @login_required
 def add_borrow(request):
     if request.method == 'POST':
         form = BorrowForm(request.POST)
@@ -114,12 +104,12 @@ def add_borrow(request):
             borrow = form.save(commit=False)
             borrow.user = request.user
             borrow.save()
-            return redirect('borrow_list')  # Redirect to list of borrows after adding
+            return redirect('borrow_list')
     else:
         form = BorrowForm()
     return render(request, 'add_borrow.html', {'form': form})
 
-# View for deleting borrow (after returning money)
+@login_required
 def delete_borrow(request, borrow_id):
     borrow = Borrow.objects.get(id=borrow_id, user=request.user)
     if request.method == 'POST':
@@ -127,16 +117,14 @@ def delete_borrow(request, borrow_id):
         return redirect('borrow_list')
     return render(request, 'confirm_delete.html', {'borrow': borrow})
 
+@login_required
 def borrow_list(request):
-    # Fetching all borrow entries for the logged-in user
     borrows = Borrow.objects.filter(user=request.user)
 
-    # Getting filter parameters
     borrower_name = request.GET.get('borrower_name', '')
     start_date = request.GET.get('start_date', '')
     end_date = request.GET.get('end_date', '')
 
-    # Applying filters
     if borrower_name:
         borrows = borrows.filter(borrower_name__icontains=borrower_name)
     if start_date:
@@ -144,10 +132,8 @@ def borrow_list(request):
     if end_date:
         borrows = borrows.filter(date_borrowed__lte=end_date)
 
-    # Calculating the total amount borrowed (after filters)
     total_amount_borrowed = borrows.aggregate(Sum('amount'))['amount__sum'] or 0
 
-    # Rendering the template with context
     return render(request, 'borrow_list.html', {
         'borrows': borrows,
         'total_amount_borrowed': total_amount_borrowed,
