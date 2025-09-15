@@ -21,3 +21,5 @@ A Django-based web application to track daily expenses and borrowed amounts with
 3. Install dependencies:
    ```bash
    pip install -r requirements.txt
+## Run
+python manage.py runserver
